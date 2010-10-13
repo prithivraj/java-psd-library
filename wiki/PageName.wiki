@@ -9,11 +9,11 @@ This page brings information about top level psd file format descritption. Other
 = Details =
 
 Psd file could be divaded to 5 base parts:
-# Header
-# Color mode data
-# Image resources
-# Layer and Mask
-# Image data
+  # Header
+  # Color mode data
+  # Image resources
+  # Layer and Mask
+  # Image data
 
 == Header section ==
 
@@ -30,15 +30,14 @@ First 4 bytes contains length of this section (except this 4 bytes). Contains me
 == Layer and Mask section ==
 
 First 4 bytes contains length of this section (except this 4 bytes). This section contains  information about number of layers and detailed information about each layer separately. Layer information is e.g.:
-* top, left, bottom, right coordinates
-* number of channels in layer
-* blend mode information
-* opacity
-* clipping
-* transparency lock and visibility flags
-* and more ...
+  * top, left, bottom, right coordinates
+  * number of channels in layer
+  * blend mode information
+  * opacity
+  * clipping
+  * transparency lock and visibility flags
+  * and more ...
 
 == Image Data section ==
 
 First 2 bytes means compression method, then image data follows encoded by method.
-
