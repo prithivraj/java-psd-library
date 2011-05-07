@@ -24,7 +24,6 @@ import psd.parser.layer.additional.LayerSectionDividerHandler;
 import psd.parser.layer.additional.LayerSectionDividerParser;
 import psd.parser.layer.additional.LayerUnicodeNameHandler;
 import psd.parser.layer.additional.LayerUnicodeNameParser;
-import psd.util.BufferedImageBuilder;
 
 import java.awt.image.*;
 import java.util.*;
@@ -91,7 +90,6 @@ public class Layer implements LayersContainer {
 
             @Override
             public void maskLoaded(Mask mask) {
-                System.out.println("mask: " + mask.getWidth() + "x" + mask.getHeight());
             }
 
         });

@@ -18,24 +18,27 @@
 
 package psd;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 
 import psd.parser.*;
 import psd.parser.header.*;
+import psd.parser.imagedata.ImageDataSectionHandler;
 import psd.parser.layer.*;
 
 public class Psd implements LayersContainer {
-	private Header header;
-	private List<Layer> layers = new ArrayList<Layer>();
-    private Layer baseLayer;
+    private Header header;
+    private List<Layer> layers = new ArrayList<Layer>();
+    private BufferedImage image;
     private String name;
 
-	public Psd(File psdFile) throws IOException {
+    public Psd(File psdFile) throws IOException {
         name = psdFile.getName();
+        final byte[][] channels = new byte[3][];
 
-		PsdFileParser parser = new PsdFileParser();
-		parser.getHeaderSectionParser().setHandler(new HeaderSectionHandler() {
+        PsdFileParser parser = new PsdFileParser();
+        parser.getHeaderSectionParser().setHandler(new HeaderSectionHandler() {
             @Override
             public void headerLoaded(Header header) {
                 Psd.this.header = header;
@@ -43,28 +46,30 @@ public class Psd implements LayersContainer {
         });
 
         final List<Layer> fullLayersList = new ArrayList<Layer>();
-		parser.getLayersSectionParser().setHandler(new LayersSectionHandler() {
+        parser.getLayersSectionParser().setHandler(new LayersSectionHandler() {
             @Override
             public void createLayer(LayerParser parser) {
                 fullLayersList.add(new Layer(parser));
             }
+        });
 
+        parser.getImageDataSectionParser().setHandler(new ImageDataSectionHandler() {
             @Override
-            public void createBaseLayer(LayerParser parser) {
-                baseLayer = new Layer(parser);
-                if (fullLayersList.isEmpty()) {
-                    fullLayersList.add(baseLayer);
+            public void channelLoaded(int channelId, byte[] channelData) {
+                if (channelId >= 0 && channelId < 3) {
+                    channels[channelId] = channelData;
                 }
             }
         });
 
-		BufferedInputStream stream = new BufferedInputStream(new FileInputStream(psdFile));
-		parser.parse(stream);
-		stream.close();
+        BufferedInputStream stream = new BufferedInputStream(new FileInputStream(psdFile));
+        parser.parse(stream);
+        stream.close();
 
         layers = makeLayersHierarchy(fullLayersList);
-	}
-	
+        image = new BufferedImageBuilder(channels, header.getWidth(), header.getHeight()).makeImage();
+    }
+
     private List<Layer> makeLayersHierarchy(List<Layer> layers) {
         LinkedList<LinkedList<Layer>> layersStack = new LinkedList<LinkedList<Layer>>();
         ArrayList<Layer> rootLayers = new ArrayList<Layer>();
@@ -103,6 +108,10 @@ public class Psd implements LayersContainer {
 
     public int getHeight() {
         return header.getHeight();
+    }
+    
+    public BufferedImage getImage() {
+        return image;
     }
 
     @Override
