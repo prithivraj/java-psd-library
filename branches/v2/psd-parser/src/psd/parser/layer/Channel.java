@@ -23,38 +23,39 @@ import java.io.IOException;
 import psd.parser.PsdInputStream;
 
 public class Channel {
-	public static final int ALPHA = -1;
-	public static final int RED = 0;
-	public static final int GREEN = 1;
-	public static final int BLUE = 2;
+    public static final int MASK = -2;
+    public static final int ALPHA = -1;
+    public static final int RED = 0;
+    public static final int GREEN = 1;
+    public static final int BLUE = 2;
 
-	private int id;
-	private int dataLength;
-	private byte[] data;
+    private int id;
+    private int dataLength;
+    private byte[] compressedData;
 
-	public Channel(PsdInputStream stream) throws IOException {
-		id = stream.readShort();
-		dataLength = stream.readInt();
-	}
+    public Channel(PsdInputStream stream) throws IOException {
+        id = stream.readShort();
+        dataLength = stream.readInt();
+    }
 
-	public Channel(int id) {
-		this.id = id;
-	}
+    public Channel(int id) {
+        this.id = id;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public int getDataLength() {
-		return dataLength;
-	}
-	
-	public void setData(byte[] data) {
-		this.data = data;
-	}
-	
-	public byte[] getData() {
-		return data;
-	}
+    public int getDataLength() {
+        return dataLength;
+    }
+
+    public void setCompressedData(byte[] data) {
+        this.compressedData = data;
+    }
+
+    public byte[] getCompressedData() {
+        return compressedData;
+    }
 
 }

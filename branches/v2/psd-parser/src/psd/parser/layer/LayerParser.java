@@ -12,8 +12,6 @@ public class LayerParser {
     private LayerHandler handler;
     private Map<String, LayerAdditionalInformationParser> additionalInformationParsers;
     private LayerAdditionalInformationParser defaultAdditionalInformationParser;
-    private int width = -1;
-    private int height = -1;
 
     public LayerParser() {
         handler = null;
@@ -67,8 +65,6 @@ public class LayerParser {
         int left = stream.readInt();
         int bottom = stream.readInt();
         int right = stream.readInt();
-        width = right - left;
-        height = bottom - top;
         if (handler != null) {
             handler.boundsLoaded(left, top, right, bottom);
         }
@@ -110,13 +106,14 @@ public class LayerParser {
         boolean obsolete = ((flags >> 2) & 0x01) != 0;
         boolean isPixelDataIrrelevantValueUseful = ((flags >> 3) & 0x01) != 0;
         boolean pixelDataIrrelevant = false;
-        if (isPixelDataIrrelevantValueUseful) { // tells if bit 4 has useful information
+        if (isPixelDataIrrelevantValueUseful) { // tells if bit 4 has useful
+                                                // information
             pixelDataIrrelevant = ((flags >> 4) & 0x01) != 0;
         }
 
         if (handler != null) {
-            handler.flagsLoaded(transparencyProtected, visible, obsolete,
-                    isPixelDataIrrelevantValueUseful, pixelDataIrrelevant);
+            handler.flagsLoaded(transparencyProtected, visible, obsolete, isPixelDataIrrelevantValueUseful,
+                    pixelDataIrrelevant);
         }
     }
 
@@ -256,19 +253,10 @@ public class LayerParser {
     }
 
     public void parseImageSection(PsdInputStream stream) throws IOException {
-        ImagePlaneParser planeParser = new ImagePlaneParser(stream);
         for (Channel channel : channels) {
-            switch (channel.getId()) {
-                case Channel.ALPHA:
-                case Channel.RED:
-                case Channel.GREEN:
-                case Channel.BLUE:
-                    channel.setData(planeParser.readPlane(width, height));
-                    break;
-                default:
-                    stream.skipBytes(channel.getDataLength());
-                    // layer mask
-            }
+            byte[] data = new byte[channel.getDataLength()];
+            stream.readFully(data);
+            channel.setCompressedData(data);
         }
         if (handler != null) {
             handler.channelsLoaded(channels);
