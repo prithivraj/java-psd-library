@@ -8,9 +8,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PsdView extends JComponent {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Psd psd;
+    private Psd psd;
 
     public PsdView() {
         setPreferredSize(new Dimension(400, 400));
@@ -27,6 +27,7 @@ public class PsdView extends JComponent {
     public void paintComponent(Graphics g) {
         if (psd != null) {
             paintLayersContainer((Graphics2D) g, psd, 1.0f);
+            //g.drawImage(psd.getImage(), 0, 0, null);
         }
     }
 
