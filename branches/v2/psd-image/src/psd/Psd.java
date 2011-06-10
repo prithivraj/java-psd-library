@@ -61,12 +61,16 @@ public class Psd implements LayersContainer {
                 }
             }
         });
-
+        
         BufferedInputStream stream = new BufferedInputStream(new FileInputStream(psdFile));
         parser.parse(stream);
         stream.close();
 
         layers = makeLayersHierarchy(fullLayersList);
+
+        if (parser.getHeaderSectionParser().getHeader().getColorMode() == ColorMode.GRAYSCALE) {
+            channels[1] = channels[2] = channels[0];
+        }
         image = new BufferedImageBuilder(channels, header.getWidth(), header.getHeight()).makeImage();
     }
 
